@@ -1,0 +1,12 @@
+*.vscode
+*.pyc
+*.out
+*.psl
+*.png
+*.svg
+
+test
+
+!arrow
+!arrow/*
+!arrow/*/*
