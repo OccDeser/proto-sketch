@@ -26,12 +26,9 @@ jobs:
         id: extract_tag
         run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
-      - name: Build Docker Image
+      - name: Build & Push Docker Image
         run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest \
-            -t ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${{ env.VERSION }} .
-
-      - name: Push Docker Image
-        run: |
-          docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest
-          docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${{ env.VERSION }}
+          REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          docker build -t ghcr.io/$REPO_NAME:latest -t ghcr.io/$REPO_NAME:${{ env.VERSION }} .
+          docker push ghcr.io/$REPO_NAME:latest
+          docker push ghcr.io/$REPO_NAME:${{ env.VERSION }}
