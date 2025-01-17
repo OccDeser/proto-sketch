@@ -29,6 +29,7 @@ jobs:
       - name: Build & Push Docker Image
         run: |
           REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          docker build -t ghcr.io/$REPO_NAME:latest -t ghcr.io/$REPO_NAME:${{ env.VERSION }} .
-          docker push ghcr.io/$REPO_NAME:latest
-          docker push ghcr.io/$REPO_NAME:${{ env.VERSION }}
+          IMAGE_NAME="proto-sketch-app"
+          docker build -t ghcr.io/$REPO_NAME/$IMAGE_NAME:latest -t ghcr.io/$REPO_NAME/$IMAGE_NAME:${{ env.VERSION }} .
+          docker push ghcr.io/$REPO_NAME/$IMAGE_NAME:latest
+          docker push ghcr.io/$REPO_NAME/$IMAGE_NAME:${{ env.VERSION }}
