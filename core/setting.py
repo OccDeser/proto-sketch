@@ -19,7 +19,7 @@ ACTION_MIN_WIDTH = 6
 ACTION_MARGIN = 3
 
 # Message Settings
-MSG_LINE_HEIGHT = 4
+MSG_LINE_HEIGHT = 3
 MSG_BOTTOM_MARGIN_PIXEL = 2
 
 # Protocol Settings

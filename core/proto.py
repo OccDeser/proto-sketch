@@ -1,6 +1,5 @@
 import base64
 from PIL import Image
-from math import floor
 from typing import List
 
 

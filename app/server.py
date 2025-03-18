@@ -39,6 +39,7 @@ def draw():
     except Exception as e:
         return jsonify({"error": "Invalid base64 code"}), 400
     
+    code = code.replace("\r\n", "\n") # Normalize line endings
     proto = parser.parse(code, debug=False)
     if not proto:
         return jsonify({"error": "Parsing failed"}), 400
@@ -64,6 +65,7 @@ def format_code():
     except Exception as e:
         return jsonify({"error": "Invalid base64 code"}), 400
     
+    code = code.replace("\r\n", "\n") # Normalize line endings
     proto = parser.parse(code, debug=False)
     if not proto:
         return jsonify({"error": "Parsing failed"}), 400

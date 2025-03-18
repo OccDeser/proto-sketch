@@ -1,6 +1,11 @@
 import sys
 from parser import parser
-from svg import draw_protocol
+from setting import Options
+from svg import draw_protocol, global_setting
+
+options = Options()
+options.create_folder()
+global_setting(options)
 
 file = sys.argv[1]
 
@@ -18,4 +23,4 @@ if "proto" in file:
     with open(file.replace("proto", "processed"), "w", encoding="utf8") as f:
         f.write(result.dump())
 else:
-    draw_protocol(result, cache=False)
+    draw_protocol(result, ".proto-sketch/output/test.svg",cache=False)
