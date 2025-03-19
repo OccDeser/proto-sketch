@@ -16,7 +16,8 @@ ACTOR_MARGIN = 3
 
 # Action Settings
 ACTION_MIN_WIDTH = 6
-ACTION_MARGIN = 3
+ACTION_X_MARGIN = 3
+ACTION_Y_MARGIN = 1
 
 # Message Settings
 MSG_LINE_HEIGHT = 3
@@ -54,7 +55,8 @@ class Options:
         }
         self.action = {
             "min_width": ACTION_MIN_WIDTH,
-            "margin": ACTION_MARGIN
+            "x_margin": ACTION_X_MARGIN,
+            "y_margin": ACTION_Y_MARGIN
         }
         self.message = {
             "line_height": MSG_LINE_HEIGHT,
@@ -90,9 +92,10 @@ class Options:
         self.actor["min_span"] = min_span
         self.actor["margin"] = margin
 
-    def set_action(self, min_width=ACTION_MIN_WIDTH, margin=ACTION_MARGIN):
+    def set_action(self, min_width=ACTION_MIN_WIDTH, x_margin=ACTION_X_MARGIN, y_margin=ACTION_Y_MARGIN):
         self.action["min_width"] = min_width
-        self.action["margin"] = margin
+        self.action["x_margin"] = x_margin
+        self.action["y_margin"] = y_margin
 
     def set_message(self, line_height=MSG_LINE_HEIGHT, bottom_margin_pixel=MSG_BOTTOM_MARGIN_PIXEL):
         self.message["line_height"] = line_height

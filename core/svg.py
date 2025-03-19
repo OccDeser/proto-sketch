@@ -6,10 +6,11 @@ from math import floor
 from hashlib import sha256
 from proto import Actor, Draw, Picture, Message, Protocol, Params
 from setting import Options
+from PIL import Image
 
 import matplotlib.pyplot as plt
-plt.rcParams['font.family'] = 'serif'
-plt.rcParams['font.serif'] = ['Times New Roman']
+plt.rcParams['font.family'] = ['Times New Roman','SimSun']
+# plt.rcParams['font.serif'] = ['Times New Roman']
 plt.rcParams['mathtext.fontset'] = 'stix'
 plt.rcParams['axes.unicode_minus'] = False
 
@@ -25,7 +26,8 @@ ACTOR_MARGIN = None
 
 """Action Settings"""
 ACTION_MIN_WIDTH = None
-ACTION_MARGIN = None
+ACTION_X_MARGIN = None
+ACTION_Y_MARGIN = None
 
 """Message Settings"""
 MSG_LINE_HEIGHT = None
@@ -57,9 +59,10 @@ def global_setting(options: Options):
     ACTOR_MIN_SPAN = options.actor['min_span']
     ACTOR_MARGIN = options.actor['margin']
     """Action Settings"""
-    global ACTION_MIN_WIDTH, ACTION_MARGIN
+    global ACTION_MIN_WIDTH, ACTION_X_MARGIN, ACTION_Y_MARGIN
     ACTION_MIN_WIDTH = options.action['min_width']
-    ACTION_MARGIN = options.action['margin']
+    ACTION_X_MARGIN = options.action['x_margin']
+    ACTION_Y_MARGIN = options.action['y_margin']
     """Message Settings"""
     global MSG_LINE_HEIGHT, MSG_BOTTOM_MARGIN_PIXEL
     MSG_LINE_HEIGHT = options.message['line_height']
@@ -82,6 +85,13 @@ def global_setting(options: Options):
 def svg_hash_name(component):
     return sha256(str(component).encode()).hexdigest()
 
+def trim_image(input_path, output_path):
+    img = Image.open(input_path)
+    img = img.convert("RGBA")
+    bbox = img.getbbox()
+    if bbox:
+        trimmed_img = img.crop(bbox)
+        trimmed_img.save(output_path)
 
 def create_message_picture(msg: Message, cache=True) -> Picture:
     sid = svg_hash_name(msg)
@@ -91,7 +101,9 @@ def create_message_picture(msg: Message, cache=True) -> Picture:
         fig, ax = plt.subplots(figsize=(0.01, 0.01))
         ax.text(0.5, 0.5, msg.escape(), fontsize=20, ha='center', va='top', transform=ax.transAxes)
         ax.axis('off')
-        fig.savefig(png_path, dpi=PIC_DPI, transparent=True, bbox_inches='tight', pad_inches=0)
+        fig.savefig(png_path, dpi=PIC_DPI, transparent=True, bbox_inches='tight', pad_inches=1)
+        plt.close(fig)
+        trim_image(png_path, png_path)
 
     msg_pic = Picture(sid, png_path, Params([]))
     msg_pic.pixel_size = (floor(msg_pic.pixel_size[0] / PIC_ZOOM),
@@ -257,14 +269,14 @@ def draw_protocol(proto: Protocol, outfile: str, cache=True):
             pixel_size = (action_size[0] * GRID_SIZE, action_size[1] * GRID_SIZE)
             action_svg = draw_action(draw, action_pic, pixel_size)
             insert_xpixel = floor(actor_xpixels[draw.src] - pixel_size[0] / 2)
+            insert_ypixel = proto_ypixel + ACTION_Y_MARGIN * GRID_SIZE
+            insert = (insert_xpixel, insert_ypixel)
             # add rectange
             # TODO: costomize action style
-            rect_size = (pixel_size[0], pixel_size[1] - PIC_MARGIN * GRID_SIZE/4)
-            insert = (insert_xpixel, round(proto_ypixel + PIC_MARGIN * GRID_SIZE/8))
-            dwg.add(dwg.rect(insert=insert, size=rect_size,
+            dwg.add(dwg.rect(insert=insert, size=pixel_size,
                              fill="white", stroke="black", stroke_width=LINE_WIDTH, rx=10, ry=10))
             dwg.add(dwg.image(href=action_svg, insert=insert, size=pixel_size))
-            proto_ypixel += pixel_size[1]
+            proto_ypixel = insert[1] + pixel_size[1]
         else:
             arrow_reverse = {'<': '>', '>': '<', '-': '-'}
             if actor_xpixels[draw.src] > actor_xpixels[draw.dst]:
@@ -358,7 +370,7 @@ def precaculate(proto: Protocol, cache=True):
                 message_width = max(item_widths[item2])
             else:
                 message_width = 0
-            action_width = floor(max(action_widths) / 2) + ACTION_MARGIN
+            action_width = floor(max(action_widths) / 2) + ACTION_X_MARGIN
             actor_width = ACTOR_MARGIN + floor(actor1_width/2 + actor2_width/2)
 
             span = max([actor_width, action_width, message_width, ACTOR_MIN_SPAN])
