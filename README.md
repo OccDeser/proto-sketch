@@ -59,7 +59,7 @@ pip install https://github.com/OccDeser/proto-sketch/releases/download/v0.1.3/pr
 2. Generate the flowchart using CLI:
 
     ```bash
-    protosketch -f demo.proto -d -o demo.svg
+    proto-sketch -f demo.proto -d -o demo.svg
     ```
 
 3. View the generated `demo.svg` file

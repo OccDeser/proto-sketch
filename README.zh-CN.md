@@ -59,7 +59,7 @@ pip install https://github.com/OccDeser/proto-sketch/releases/download/v0.1.3/pr
 2. 使用命令行工具生成流程图:
 
     ```bash
-    protosketch -f demo.proto -d -o demo.svg
+    proto-sketch -f demo.proto -d -o demo.svg
     ```
 
 3. 查看生成的 `demo.svg` 文件
