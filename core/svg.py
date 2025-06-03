@@ -2,7 +2,7 @@ import os
 import svgwrite
 import base64
 from typing import Tuple
-from math import floor
+from math import floor, ceil
 from hashlib import sha256
 from proto import Actor, Draw, Picture, Message, Protocol, Params
 from setting import Options
@@ -145,7 +145,8 @@ def create_arrow_picture(draw: Draw, gsize=10, cache=True):
     # create message picture
     arrow_pic = create_message_picture(draw.message, cache=cache)
     # caculate size
-    size = (floor(arrow_pic.pixel_size[0] / gsize) + 1, MSG_LINE_HEIGHT)
+    pic_height = ceil(ceil(arrow_pic.pixel_size[1] / GRID_SIZE) / MSG_LINE_HEIGHT) * MSG_LINE_HEIGHT
+    size = (floor(arrow_pic.pixel_size[0] / gsize) + 1, pic_height)
     return size, arrow_pic
 
 
