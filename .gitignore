@@ -5,7 +5,11 @@
 *.png
 *.svg
 
+__pycache__
+
 test
+psl
+.proto-sketch
 
 !arrow
 !arrow/*

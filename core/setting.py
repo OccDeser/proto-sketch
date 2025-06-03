@@ -33,9 +33,10 @@ LINE_WIDTH = 1
 GRID_SIZE = 10
 
 # Folder Settings
-ARROW_FOLDER = "arrow"
-CACHE_FOLDER = ".proto-sketch/cache"
-OUTPUT_FOLDER = ".proto-sketch/output"
+WORK_FOLDER = os.path.join(os.getcwd(), ".proto-sketch")
+CACHE_FOLDER = os.path.join(WORK_FOLDER, "cache")
+OUTPUT_FOLDER = os.path.join(WORK_FOLDER, "output")
+ARROW_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "arrow")
 
 
 ####################################
@@ -72,15 +73,33 @@ class Options:
             "grid_size": GRID_SIZE
         }
         self.folder = {
-            "arrow": "arrow",
+            "work": WORK_FOLDER,
+            "arrow": ARROW_FOLDER,
             "cache": CACHE_FOLDER,
             "output": OUTPUT_FOLDER
         }
 
     def create_folder(self):
-        for folder in self.folder.values():
-            if not os.path.exists(folder):
-                os.makedirs(folder)
+        if not os.path.exists(self.folder["cache"]):
+            os.makedirs(self.folder["cache"])
+
+        if not os.path.exists(self.folder["output"]):
+            os.makedirs(self.folder["output"])
+
+    def set_folder(self, work=None, arrow=None, cache=None, output=None):
+        if work:
+            self.folder["work"] = work
+            self.folder["cache"] = os.path.join(work, "cache")
+            self.folder["output"] = os.path.join(work, "output")
+
+        if arrow:
+            self.folder["arrow"] = arrow
+
+        if cache:
+            self.folder["cache"] = cache
+
+        if output:
+            self.folder["output"] = output
 
     def set_pic(self, dpi=PIC_DPI, zoom=PIC_ZOOM, margin=PIC_MARGIN):
         self.pic["dpi"] = dpi
