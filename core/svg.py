@@ -9,8 +9,14 @@ from setting import Options
 from PIL import Image
 
 import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+
+font_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "fonts")
+font_files = fm.findSystemFonts(fontpaths=[font_folder])
+for font_file in font_files:
+    fm.fontManager.addfont(font_file)
+
 plt.rcParams['font.family'] = ['Times New Roman','SimSun']
-# plt.rcParams['font.serif'] = ['Times New Roman']
 plt.rcParams['mathtext.fontset'] = 'stix'
 plt.rcParams['axes.unicode_minus'] = False
 
