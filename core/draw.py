@@ -68,14 +68,11 @@ if not proto:
     print("Parsing failed")
     exit()
 
-
-formatted_code = proto.dump()
-if args.format:
-    print(formatted_code)
-
-
 using_cache = not args.no_cache
-if args.draw:
-    proto = ProtoParser.parse(formatted_code, debug=False)
+if args.format:
+    proto.preprocess(cache=using_cache)
+    formatted_code = proto.dump()
+    print(formatted_code)
+elif args.draw:
     output_file = os.path.join(options.folder["output"], f"{proto.name}.svg")
     draw_protocol(proto, output_file, cache=using_cache)

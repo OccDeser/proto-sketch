@@ -112,8 +112,8 @@ def create_message_picture(msg: Message, cache=True) -> Picture:
         trim_image(png_path, png_path)
 
     msg_pic = Picture(sid, png_path, Params([]))
-    msg_pic.pixel_size = (floor(msg_pic.pixel_size[0] / PIC_ZOOM),
-                          floor(msg_pic.pixel_size[1] / PIC_ZOOM))
+    msg_pic.pixel_size = (floor(msg_pic.pixel_size[0] * PIC_ZOOM),
+                          floor(msg_pic.pixel_size[1] * PIC_ZOOM))
     return msg_pic
 
 
@@ -365,37 +365,31 @@ def precaculate(proto: Protocol, cache=True):
     proto_width = 0
     for i in range(len(actors)):
         if i == 0:
-            item1 = actors[i]
-            item1_width = max(item_widths[item1])
-            proto_width = PROTO_MARGIN + floor(item1_width/2)
+            span = PROTO_MARGIN + floor(max(item_widths[actors[i]])/2)
+            proto_width = span
         else:
             item1 = actors[i-1]
             item2 = f"{actors[i-1]}->{actors[i]}"
             item3 = actors[i]
 
-            actor1_width = item_widths[item1][0]
-            actor2_width = item_widths[item3][0]
-            action_widths = [0]+item_widths[item1][1:] + item_widths[item3][1:]
-
             if item2 in item_widths:
                 message_width = max(item_widths[item2])
             else:
                 message_width = 0
+
+            actor1_width = item_widths[item1][0]
+            actor2_width = item_widths[item3][0]
+            action_widths = [0] + item_widths[item1][1:] + item_widths[item3][1:]
+            
             action_width = floor(max(action_widths) / 2) + ACTION_X_MARGIN
             actor_width = ACTOR_MARGIN + floor(actor1_width/2 + actor2_width/2)
 
             span = max([actor_width, action_width, message_width, ACTOR_MIN_SPAN])
             proto_width += span
 
-        # set actor gridx
-        if i == 0:
-            proto.actors[i].gridx = PROTO_MARGIN
-        else:
-            proto.actors[i].gridx = proto_width - floor(actor2_width/2)
+        proto.actors[i].gridx = proto_width - floor(item_widths[actors[i]][0]/2)
 
         if i == len(actors) - 1:
-            item1 = actors[i]
-            item1_width = max(item_widths[item1])
-            proto_width += PROTO_MARGIN + floor(item1_width/2)
+            proto_width += PROTO_MARGIN + floor(max(item_widths[actors[i]])/2)
 
     return (proto_width, proto_height)

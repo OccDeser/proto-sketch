@@ -45,7 +45,7 @@ class Protocol:
             s += f"{draw.dump()}\n\n"
         return s
 
-    def preprocess(self):
+    def preprocess(self, cache=False):
         # remove duplicates
         new_actors = []
         for actor in self.actors:
@@ -61,7 +61,7 @@ class Protocol:
                 self.actors.append(Actor(draw.dst, Params()))
 
         from svg import precaculate
-        proto_size = precaculate(self, cache=True)
+        proto_size = precaculate(self, cache=cache)
         self.width = proto_size[0] if self.width == "auto" else self.width
         self.height = proto_size[1] if self.height == "auto" else self.height
 
