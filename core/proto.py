@@ -96,6 +96,7 @@ class Message:
         text = self.text
         text = text.replace("\\\\", "\\")
         text = text.replace("\\n", "\n")
+        text = text.replace('\\"', '"')
         return text
 
     def __str__(self):
