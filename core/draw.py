@@ -14,6 +14,8 @@ parser.add_argument("-o", "--options", type=str, nargs='*',
                     help="Set options in the format key=value")
 parser.add_argument("--options-help", action="store_true",
                     help="Show available options and their default values")
+parser.add_argument("--no-cache", action="store_true",
+                    help="Disable caching of generated images")
 args = parser.parse_args()
 
 # Check if the user requested help for options
@@ -67,10 +69,13 @@ if not proto:
     exit()
 
 
+formatted_code = proto.dump()
 if args.format:
-    formatted_code = proto.dump()
     print(formatted_code)
 
+
+using_cache = not args.no_cache
 if args.draw:
+    proto = ProtoParser.parse(formatted_code, debug=False)
     output_file = os.path.join(options.folder["output"], f"{proto.name}.svg")
-    draw_protocol(proto, output_file)
+    draw_protocol(proto, output_file, cache=using_cache)
