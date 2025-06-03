@@ -60,7 +60,7 @@ class Protocol:
             if draw.dst not in self.actors:
                 self.actors.append(Actor(draw.dst, Params()))
 
-        from svg import precaculate
+        from .svg import precaculate
         proto_size = precaculate(self, cache=cache)
         self.width = proto_size[0] if self.width == "auto" else self.width
         self.height = proto_size[1] if self.height == "auto" else self.height

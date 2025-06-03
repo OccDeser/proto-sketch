@@ -4,14 +4,14 @@ import base64
 from typing import Tuple
 from math import floor, ceil
 from hashlib import sha256
-from proto import Actor, Draw, Picture, Message, Protocol, Params
-from setting import Options
 from PIL import Image
-
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
+from .setting import Options
+from .proto import Actor, Draw, Picture, Message, Protocol, Params
+from .utils import get_resource_path
 
-font_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "fonts")
+font_folder = get_resource_path("fonts")
 font_files = fm.findSystemFonts(fontpaths=[font_folder])
 for font_file in font_files:
     fm.fontManager.addfont(font_file)
@@ -215,9 +215,9 @@ def draw_arrow(arrow: Draw, pic: Picture, pixel_size: Tuple[int, int]) -> str:
 
     def add_arrow(direction, arrow_x):
         if direction == 'left':
-            arrow_svg = f"{ARROW_FOLDER}/default/left.svg"
+            arrow_svg = os.path.join(ARROW_FOLDER, "default", "left.svg")
         else:
-            arrow_svg = f"{ARROW_FOLDER}/default/right.svg"
+            arrow_svg = os.path.join(ARROW_FOLDER, "default", "right.svg")
         with open(arrow_svg, "rb") as f:
             arrow_svg = f.read()
         arrow_svg = base64.b64encode(arrow_svg).decode("utf-8")

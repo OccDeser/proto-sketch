@@ -1,4 +1,5 @@
 import os
+from .utils import get_resource_path
 
 ####################################
 # Default setting for the project
@@ -36,7 +37,7 @@ GRID_SIZE = 10
 WORK_FOLDER = os.path.join(os.getcwd(), ".proto-sketch")
 CACHE_FOLDER = os.path.join(WORK_FOLDER, "cache")
 OUTPUT_FOLDER = os.path.join(WORK_FOLDER, "output")
-ARROW_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "arrow")
+ARROW_FOLDER = get_resource_path("arrow")
 
 
 ####################################

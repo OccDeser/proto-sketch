@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "proto-sketch"
+version = "0.1.3"
+description = "Proto Sketch drawing tool"
+authors = [{name = "OccDeser", email = "xiaoyk22@qq.com"}]
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "svgwrite~=1.4.3",  
+    "pillow~=11.1.0",
+    "ply~=3.11",
+    "matplotlib~=3.10.0",
+]
+
+[tool.setuptools]
+packages = ["proto_sketch"]
+package-dir = {"proto_sketch" = "core"} 
+
+[tool.setuptools.package-data]
+proto_sketch = [
+    "data/fonts/*",
+    "data/arrow/default/*",
+]
+
+[project.scripts]
+proto-sketch = "proto_sketch.draw:main"

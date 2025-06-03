@@ -1,16 +1,17 @@
-*.vscode
 *.pyc
 *.out
 *.psl
 *.png
 *.svg
-
+*.vscode
+*.egg-info
+.test
+.proto-sketch
+psl
+dist
+venv
 __pycache__
 
-test
-psl
-.proto-sketch
-
-!arrow
-!arrow/*
-!arrow/*/*
+!images/*
+!core/data/fonts/*
+!core/data/arrow/default/*

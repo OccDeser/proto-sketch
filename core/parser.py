@@ -1,5 +1,5 @@
 from ply import lex, yacc
-from proto import Params, Actor, Draw, Picture, Protocol
+from .proto import Params, Actor, Draw, Picture, Protocol
 
 # 1. 词法分析器
 reserved = {'if': 'IF', 'while': 'WHILE',
