@@ -24,14 +24,19 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install build
 
+      - name: Extract version from tag
+        id: version
+        run: |
+          # Remove 'v' prefix from tag name
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
       - name: Build package
         run: |
           python -m build
-          # 重命名构建产物以包含版本号
-          VERSION=$(python -c "import setuptools; print(setuptools.setup()['version'])")
           mkdir -p dist/artifacts
-          cp dist/*.whl dist/artifacts/proto_sketch-${VERSION}-py3-none-any.whl
-          cp dist/*.tar.gz dist/artifacts/proto_sketch-${VERSION}.tar.gz
+          cp dist/*.whl dist/artifacts/proto_sketch-${{ steps.version.outputs.version }}-py3-none-any.whl
+          cp dist/*.tar.gz dist/artifacts/proto_sketch-${{ steps.version.outputs.version }}.tar.gz
 
       - name: Generate changelog
         id: changelog
