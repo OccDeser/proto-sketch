@@ -248,6 +248,11 @@ def draw_protocol(proto: Protocol, outfile: str, cache=True):
     pixel_height = proto.height * GRID_SIZE
     pixel_size = (pixel_width, pixel_height)
     dwg = svgwrite.Drawing(outfile, profile="tiny", size=pixel_size)
+    
+    # set background
+    # #TODO: costomize background color
+    dwg.add(dwg.rect(insert=(0, 0), size=pixel_size, fill="white"))
+    basic_elements_num = len(dwg.elements)
 
     # draw actors
     actor_height = 0
@@ -307,7 +312,7 @@ def draw_protocol(proto: Protocol, outfile: str, cache=True):
         x = actor_xpixels[actor.name]
         dwg.add(dwg.line(start=(x, y0), end=(x, y1), stroke="black", stroke_width=LINE_WIDTH))
     line_elements = dwg.elements[-len(proto.actors):]
-    dwg.elements = line_elements + dwg.elements[:-len(proto.actors)]
+    dwg.elements =  dwg.elements[:basic_elements_num] + line_elements + dwg.elements[basic_elements_num:-len(proto.actors)]
 
     # draw end rect
     # TODO: costomize end style
