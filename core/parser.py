@@ -1,7 +1,9 @@
 from ply import lex, yacc
-from .proto import Params, Actor, Draw, Picture, Protocol
+from .proto import Params, Actor, Draw, Picture, Protocol, Comment
 
+##########################################################
 # 1. 词法分析器
+##########################################################
 reserved = {'if': 'IF', 'while': 'WHILE',
             'actor': 'ACTOR', 'arrow': 'ARROW', 'line': 'LINE',
             'picture': "PICTURE", 'protocol': "PROTOCOL",
@@ -9,8 +11,8 @@ reserved = {'if': 'IF', 'while': 'WHILE',
             'width': 'PARAM_WIDTH', 'height': 'PARAM_HEIGHT',
             'line_style': 'PARAM_LINE', 'arrowl_style': 'PARAM_ARROWL',
             'arrowr_style': 'PARAM_ARROWR', 'arrow_style': 'PARAM_ARROW'}
-tokens = ['COLON', 'MINUS', 'LANGLE', 'RANGLE', 'LPAREN', 
-          'RPAREN', 'EQUAL', 'COMMA', 'NUMBER', 'TEXT', 'IDENTIFIER']
+tokens = ['COLON', 'MINUS', 'LANGLE', 'RANGLE', 'LPAREN', 'RPAREN', 'EQUAL', 'COMMA', 
+          'NEWLINE', 'TEXT', 'COMMENT', 'NUMBER', 'IDENTIFIER']
 tokens += list(reserved.values())
 
 t_COMMA = r','
@@ -23,9 +25,22 @@ t_LPAREN = r'\('
 t_RPAREN = r'\)'
 
 
-def t_TEXT(t):
-    r'\"(\\.|[^\"\\])*\"'  # 匹配双引号包围的字符串，支持转义字符
+def t_NEWLINE(t):
+    r'\n+'
+    t.lexer.lineno += len(t.value)
+    t.lexer.line_start = t.lexpos + len(t.value)
+    return t
+
+
+def t_TEXT(t):  # 匹配双引号包围的字符串，支持转义字符
+    r'\"(\\.|[^\"\\])*\"'
     t.value = t.value.strip().strip('"')
+    return t
+
+
+def t_COMMENT(t):
+    r'\#[^\n]*'
+    t.value = t.value.strip().strip('#').strip()
     return t
 
 
@@ -43,23 +58,29 @@ def t_IDENTIFIER(t):
     return t
 
 
-t_ignore = ' \t\n'  # 忽略空格和制表符
+t_ignore = ' \t'  # 忽略空格和制表符
 
 
 def t_error(t):
-    print(f"Illegal character '{t.value[0]}'")
+    print(f"Illegal character '{t.value[0]}' at line {t.lineno}, column {t.lexpos - t.lexer.line_start + 1}")
     t.lexer.skip(1)
 
 
 lexer = lex.lex()
+lexer.line_start = 0
 
+##########################################################
 # 2. 语法分析器
+##########################################################
 
+# precedence = (
+#     ('nonassoc', 'NEWLINE'),  # NEWLINE 不参与结合，但用于优先 shift
+# )
 
 def p_ps(p):
     '''ps : PROTOCOL IDENTIFIER
           | PROTOCOL IDENTIFIER LPAREN parameters RPAREN
-          | ps declaration'''
+          | ps declcomment'''
     if p[1] == 'protocol':
         if len(p) == 3:
             p[0] = Protocol(p[2], Params())
@@ -67,7 +88,54 @@ def p_ps(p):
             p[0] = Protocol(p[2], Params(p[4]))
     else:
         p[0] = p[1]
-        p[0].add(p[2])
+        if p[2] is not None:
+            if isinstance(p[2], tuple):
+                p[0].add(p[2][0])
+                p[0].add(p[2][1])
+            else:
+                p[0].add(p[2])
+        
+
+
+def p_declcomment(p):
+    '''declcomment : multicomment NEWLINE declaration COMMENT NEWLINE
+                   | multicomment NEWLINE declaration
+                   | declaration COMMENT NEWLINE
+                   | declaration NEWLINE
+                   | multicomment
+                   | NEWLINE
+                   '''
+    if len(p) == 2:
+        if isinstance(p[1], Comment):
+            p[0] = p[1]
+        else:
+            p[0] = None
+    elif len(p) == 3:
+        p[0] = p[1]
+    elif len(p) == 4:
+        if isinstance(p[1], Comment):
+            if len(p[2]) == 1:
+                p[0] = p[3]
+                p[0].prefix_comment = p[1]
+            else:
+                p[0] = (p[1], p[3])
+        else:
+            p[0] = p[1]
+            p[0].suffix_comment = Comment(p[2])
+    elif len(p) == 6:
+        p[0] = p[3]
+        p[0].prefix_comment = p[1]
+        p[0].suffix_comment = Comment(p[4])
+
+
+def p_multicomment(p):
+    '''multicomment : multicomment NEWLINE COMMENT
+                    | COMMENT'''
+    if len(p) == 2:
+        p[0] = Comment(p[1])
+    else:
+        p[0] = p[1]
+        p[0].add(p[3])
 
 
 def p_declaration(p):
@@ -99,8 +167,8 @@ def p_parameters(p):
 
 
 def p_declaration_actor(p):
-    '''declaration_actor : ACTOR IDENTIFIER 
-                    | ACTOR IDENTIFIER LPAREN parameters RPAREN'''
+    '''declaration_actor : ACTOR IDENTIFIER LPAREN parameters RPAREN
+                         | ACTOR IDENTIFIER'''
     if len(p) == 3:
         p[0] = Actor(p[2], Params())
     else:
@@ -113,12 +181,17 @@ def p_arrowpart(p):
                  | MINUS'''
     p[0] = p[1]
 
+def p_colonnewline(p):
+    '''colonnewline : COLON NEWLINE
+                    | COLON'''
+    p[0] = p[1]
+
 
 def p_declaration_draw(p):
-    '''declaration_draw : IDENTIFIER COLON TEXT
-                        | IDENTIFIER LPAREN parameters RPAREN COLON TEXT
-                        | IDENTIFIER arrowpart arrowpart IDENTIFIER COLON TEXT
-                        | IDENTIFIER arrowpart arrowpart IDENTIFIER LPAREN parameters RPAREN COLON TEXT'''
+    '''declaration_draw : IDENTIFIER colonnewline TEXT
+                        | IDENTIFIER LPAREN parameters RPAREN colonnewline TEXT
+                        | IDENTIFIER arrowpart arrowpart IDENTIFIER colonnewline TEXT
+                        | IDENTIFIER arrowpart arrowpart IDENTIFIER LPAREN parameters RPAREN colonnewline TEXT'''
     if p[2] == ':':
         p[0] = Draw(p[1], p[1], None, None, p[3], [])
     elif p[2] == '(':
@@ -129,7 +202,7 @@ def p_declaration_draw(p):
         p[0] = Draw(p[1], p[4], p[2], p[3], p[9], p[6])
 
 
-def p_declaration_pickture(p):
+def p_declaration_picture(p):
     '''declaration_picture : PICTURE IDENTIFIER COLON TEXT
                            | PICTURE IDENTIFIER LPAREN parameters RPAREN COLON TEXT'''
     if len(p) == 5:
@@ -139,7 +212,19 @@ def p_declaration_pickture(p):
 
 
 def p_error(p):
-    print("Syntax error!")
-
+    def get_error_context(p):
+        last_cr = lexer.lexdata.rfind('\n', 0, p.lexpos)
+        next_nl = lexer.lexdata.find('\n', p.lexpos)
+        if next_nl < 0:
+            next_nl = len(lexer.lexdata)
+        return lexer.lexdata[last_cr+1:next_nl]
+    
+    if p:
+        col = p.lexpos - lexer.line_start + 1
+        print(f"Error in line {p.lineno}:")
+        print(f"    {get_error_context(p)}")
+        print(" " * (col + 3) + "^")
+    else:
+        print("Syntax error at EOF")
 
 parser = yacc.yacc(debug=True)

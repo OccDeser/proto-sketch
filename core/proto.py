@@ -1,6 +1,6 @@
 import base64
 from PIL import Image
-from typing import List
+from typing import List, Dict
 
 
 class Protocol:
@@ -16,6 +16,7 @@ class Protocol:
         self.actors: List[Actor] = []
         self.pictures: List[Picture] = []
         self.draws: List[Draw] = []
+        self.comments: Dict[int, List[Comment]] = {}
 
     def __str__(self):
         return self.dump()
@@ -27,22 +28,46 @@ class Protocol:
             self.draws.append(declaration)
         elif isinstance(declaration, Picture):
             self.pictures.append(declaration)
+        elif isinstance(declaration, Comment):
+            if len(self.draws) not in self.comments:
+                self.comments[len(self.draws)] = [declaration]
+            else:
+                self.comments[len(self.draws)].append(declaration)
         else:
             raise ValueError("Unknown declaration")
 
     def dump(self):
         s = f"protocol {self.name}(width={self.width}, height={self.height})\n\n"
 
+        def dump(obj):
+            prefix = suffix = ""
+            if obj.prefix_comment:
+                prefix = obj.prefix_comment.dump() + "\n"
+            if obj.suffix_comment:
+                suffix = " " + obj.suffix_comment.dump()
+            return f"{prefix}{obj.dump()}{suffix}"
+
         for picture in self.pictures:
-            s += f"{picture.dump()}\n"
+            s += f"{dump(picture)}\n"
         s += "\n"
 
         for actor in self.actors:
-            s += f"{actor.dump()}\n"
+            s += f"{dump(actor)}\n"
         s += "\n"
 
-        for draw in self.draws:
-            s += f"{draw.dump()}\n\n"
+        for index, draw in enumerate(self.draws):
+            if index in self.comments:
+                for comment in self.comments[index]:
+                    s += f"{comment.dump()}\n\n"
+            s += f"{dump(draw)}\n\n"
+
+        if len(self.draws) in self.comments:
+            for i, c in enumerate(self.comments[len(self.draws)]):
+                if i == 0:
+                    s += f"{c.dump()}\n"
+                else:
+                    s += f"\n{c.dump()}\n"
+
         return s
 
     def preprocess(self, cache=False):
@@ -64,8 +89,6 @@ class Protocol:
         proto_size = precaculate(self, cache=cache)
         self.width = proto_size[0] if self.width == "auto" else self.width
         self.height = proto_size[1] if self.height == "auto" else self.height
-
-
 
 
 class Params:
@@ -105,6 +128,8 @@ class Message:
 
 class Draw:
     def __init__(self, src, dst, larrow, rarrow, text, params):
+        self.prefix_comment = None
+        self.suffix_comment = None
         self.src = src
         self.dst = dst
         self.larrow = larrow
@@ -162,6 +187,8 @@ class Draw:
 
 class Actor:
     def __init__(self, name: str, params: Params):
+        self.prefix_comment = None
+        self.suffix_comment = None
         self.name = name
         self.params = params
         self.gridx = getattr(params, "gridx", 'auto')
@@ -193,6 +220,8 @@ class Actor:
 
 class Picture:
     def __init__(self, name, file, params):
+        self.prefix_comment = None
+        self.suffix_comment = None
         self.name = name
         self.file = file
 
@@ -214,3 +243,17 @@ class Picture:
 
     def dump(self):
         return f'picture {self.name}(width={self.width}, height={self.height}): "{self.file}"'
+
+
+class Comment:
+    def __init__(self, text):
+        self.comments = [text]
+
+    def __str__(self):
+        return f"Comment: {self.comments}"
+
+    def dump(self):
+        return "\n".join([f"# {comment}" for comment in self.comments])
+
+    def add(self, text):
+        self.comments.append(text)
