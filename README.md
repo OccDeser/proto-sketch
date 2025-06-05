@@ -26,7 +26,7 @@ Proto Sketch is a Python-based protocol flowchart tool that automatically genera
 ### Installation
 
 ```bash
-pip install https://github.com/OccDeser/proto-sketch/releases/download/v0.1.3/proto_sketch-0.1.3-py3-none-any.whl
+pip install https://github.com/OccDeser/proto-sketch/releases/download/v0.1.5/proto_sketch-0.1.5-py3-none-any.whl
 ```
 
 ### Basic Usage

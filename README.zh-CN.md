@@ -26,7 +26,7 @@ Proto Sketch 是一个基于 Python 的协议流程绘制工具，它通过自�
 ### 安装
 
 ```bash
-pip install https://github.com/OccDeser/proto-sketch/releases/download/v0.1.3/proto_sketch-0.1.3-py3-none-any.whl
+pip install https://github.com/OccDeser/proto-sketch/releases/download/v0.1.5/proto_sketch-0.1.5-py3-none-any.whl
 ```
 
 ### 基本使用

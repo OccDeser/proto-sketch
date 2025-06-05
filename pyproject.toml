@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "proto-sketch"
-version = "0.1.3"
+version = "0.1.5"
 description = "Proto Sketch drawing tool"
 authors = [{name = "OccDeser", email = "xiaoyk22@qq.com"}]
 readme = "README.md"

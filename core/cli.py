@@ -1,5 +1,6 @@
 import os
 from argparse import ArgumentParser
+from . import __version__
 from .setting import Options
 from .proto import Protocol
 from .parser import parser as ProtoParser
@@ -10,7 +11,6 @@ def main():
     parser.add_argument("-f", "--file", type=str, required=True, help="Input file to process")
     parser.add_argument("-t", "--format", action="store_true", help="Format the code before processing")
     parser.add_argument("-d", "--draw", action="store_true", help="Draw the protocol diagram")
-    # -o, --output
     parser.add_argument("-o", "--output", type=str,
                         help="Output file for the diagram (default: './proto-sketch/output/NAME.svg')")
     parser.add_argument("--options", type=str, nargs='*', help="Set options in the format key=value")
@@ -18,6 +18,7 @@ def main():
                         help="Show available options and their default values")
     parser.add_argument("--no-cache", action="store_true",
                         help="Disable caching of generated images")
+    parser.add_argument("-v", "--version", action="version", version=__version__, help="Show version information")
     args = parser.parse_args()
 
     # Check if the user requested help for options
