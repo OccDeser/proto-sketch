@@ -5,20 +5,8 @@ from typing import Tuple
 from math import floor, ceil
 from hashlib import sha256
 from PIL import Image
-import matplotlib.pyplot as plt
-import matplotlib.font_manager as fm
 from .setting import Options
 from .proto import Actor, Draw, Picture, Message, Protocol, Params
-from .utils import get_resource_path
-
-font_folder = get_resource_path("fonts")
-font_files = fm.findSystemFonts(fontpaths=[font_folder])
-for font_file in font_files:
-    fm.fontManager.addfont(font_file)
-
-plt.rcParams['font.family'] = ['Times New Roman','SimSun']
-plt.rcParams['mathtext.fontset'] = 'stix'
-plt.rcParams['axes.unicode_minus'] = False
 
 """Picture Settings"""
 PIC_DPI = None
@@ -88,6 +76,26 @@ def global_setting(options: Options):
     CACHE_FOLDER = options.folder['cache']
 
 
+PLT = None
+
+def import_plt():
+    global PLT
+    if PLT is None:
+        import matplotlib.pyplot as plt
+        import matplotlib.font_manager as fm
+        from .utils import get_resource_path
+
+        font_folder = get_resource_path("fonts")
+        font_files = fm.findSystemFonts(fontpaths=[font_folder])
+        for font_file in font_files:
+            fm.fontManager.addfont(font_file)
+
+        plt.rcParams['font.family'] = ['Times New Roman','SimSun']
+        plt.rcParams['mathtext.fontset'] = 'stix'
+        plt.rcParams['axes.unicode_minus'] = False
+        PLT = plt
+    return PLT
+
 def svg_hash_name(component):
     return sha256(str(component).encode()).hexdigest()
 
@@ -104,6 +112,7 @@ def create_message_picture(msg: Message, cache=True) -> Picture:
     png_path = f"{CACHE_FOLDER}/{sid}.png"
 
     if not cache or not os.path.exists(png_path):
+        plt = import_plt()
         fig, ax = plt.subplots(figsize=(0.01, 0.01))
         ax.text(0.5, 0.5, msg.escape(), fontsize=20, ha='center', va='top', transform=ax.transAxes)
         ax.axis('off')
@@ -242,7 +251,7 @@ def draw_arrow(arrow: Draw, pic: Picture, pixel_size: Tuple[int, int]) -> str:
 
 
 def draw_protocol(proto: Protocol, outfile: str, cache=True):
-    proto.preprocess()
+    proto.preprocess(cache=cache)
 
     # create svg
     pixel_width = proto.width * GRID_SIZE
@@ -324,7 +333,6 @@ def draw_protocol(proto: Protocol, outfile: str, cache=True):
         rect_insert = (x - width / 2, y1)
         dwg.add(dwg.rect(insert=rect_insert, size=(width, height),
                          fill="black", stroke="black", stroke_width=LINE_WIDTH))
-
     dwg.save()
 
 
