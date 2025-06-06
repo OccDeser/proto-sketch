@@ -54,7 +54,6 @@ def main():
     options.create_folder()
     global_setting(options)
 
-
     # Check if the input file exists
     file = args.file
     if not file:
@@ -74,14 +73,16 @@ def main():
     using_cache = not args.no_cache
     if args.format:
         proto.preprocess(cache=using_cache)
+        proto.width = proto.height = "auto"
         formatted_code = proto.dump()
-        print(formatted_code)
+        print(formatted_code, end="")
     elif args.draw:
         if args.output:
             output_file = args.output
         else:
             output_file = os.path.join(options.folder["output"], f"{proto.name}.svg")
         draw_protocol(proto, output_file, cache=using_cache)
+        print(os.path.abspath(output_file))
 
 
 if __name__ == "__main__":

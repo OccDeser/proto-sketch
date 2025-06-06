@@ -70,7 +70,7 @@ class Protocol:
 
         return s
 
-    def preprocess(self, cache=False):
+    def preprocess(self, cache=True):
         # remove duplicates
         new_actors = []
         for actor in self.actors:
