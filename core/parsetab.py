@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'ACTOR ARROW COLON COMMA COMMENT EQUAL IDENTIFIER IF LANGLE LINE LPAREN MINUS NEWLINE NUMBER PARAM_ARROW PARAM_ARROWL PARAM_ARROWR PARAM_GRIDX PARAM_GRIDY PARAM_HEIGHT PARAM_LINE PARAM_WIDTH PICTURE PROTOCOL RANGLE RPAREN TEXT WHILEps : PROTOCOL IDENTIFIER\n          | PROTOCOL IDENTIFIER LPAREN parameters RPAREN\n          | ps declcommentdeclcomment : multicomment NEWLINE declaration COMMENT NEWLINE\n                   | multicomment NEWLINE declaration\n                   | declaration COMMENT NEWLINE\n                   | declaration NEWLINE\n                   | multicomment\n                   | NEWLINE\n                   multicomment : multicomment NEWLINE COMMENT\n                    | COMMENTdeclaration : declaration_actor\n                   | declaration_picture\n                   | declaration_drawparameter : PARAM_GRIDX EQUAL NUMBER\n                 | PARAM_GRIDY EQUAL NUMBER\n                 | PARAM_WIDTH EQUAL NUMBER\n                 | PARAM_HEIGHT EQUAL NUMBER\n                 | PARAM_LINE EQUAL IDENTIFIER\n                 | PARAM_ARROW EQUAL IDENTIFIER\n                 | PARAM_ARROWL EQUAL IDENTIFIER\n                 | PARAM_ARROWR EQUAL IDENTIFIERparameters : parameter\n                  | parameters COMMA parameterdeclaration_actor : ACTOR IDENTIFIER LPAREN parameters RPAREN\n                         | ACTOR IDENTIFIERarrowpart : LANGLE\n                 | RANGLE\n                 | MINUScolonnewline : COLON NEWLINE\n                    | COLONdeclaration_draw : IDENTIFIER colonnewline TEXT\n                        | IDENTIFIER LPAREN parameters RPAREN colonnewline TEXT\n                        | IDENTIFIER arrowpart arrowpart IDENTIFIER colonnewline TEXT\n                        | IDENTIFIER arrowpart arrowpart IDENTIFIER LPAREN parameters RPAREN colonnewline TEXTdeclaration_picture : PICTURE IDENTIFIER COLON TEXT\n                           | PICTURE IDENTIFIER LPAREN parameters RPAREN COLON TEXT'
+_lr_signature = 'nonassocNEWLINEACTOR ARROW COLON COMMA COMMENT EQUAL IDENTIFIER IF LANGLE LINE LPAREN MINUS NEWLINE NUMBER PARAM_ARROW PARAM_ARROWL PARAM_ARROWR PARAM_GRIDX PARAM_GRIDY PARAM_HEIGHT PARAM_LINE PARAM_WIDTH PICTURE PROTOCOL RANGLE RPAREN TEXT WHILEfinish : psps : PROTOCOL IDENTIFIER\n          | PROTOCOL IDENTIFIER LPAREN parameters RPAREN\n          | ps declarationdeclaration : declaration_actor\n                   | declaration_picture\n                   | declaration_draw\n                   | COMMENTparameter : PARAM_GRIDX EQUAL NUMBER\n                 | PARAM_GRIDY EQUAL NUMBER\n                 | PARAM_WIDTH EQUAL NUMBER\n                 | PARAM_HEIGHT EQUAL NUMBER\n                 | PARAM_LINE EQUAL IDENTIFIER\n                 | PARAM_ARROW EQUAL IDENTIFIER\n                 | PARAM_ARROWL EQUAL IDENTIFIER\n                 | PARAM_ARROWR EQUAL IDENTIFIERparameters : parameter\n                  | parameters COMMA parameterdeclaration_actor : ACTOR IDENTIFIER LPAREN parameters RPAREN\n                         | ACTOR IDENTIFIERarrowpart : LANGLE\n                 | RANGLE\n                 | MINUSdeclaration_draw : IDENTIFIER COLON TEXT\n                        | IDENTIFIER LPAREN parameters RPAREN COLON TEXT\n                        | IDENTIFIER arrowpart arrowpart IDENTIFIER COLON TEXT\n                        | IDENTIFIER arrowpart arrowpart IDENTIFIER LPAREN parameters RPAREN COLON TEXTdeclaration_picture : PICTURE IDENTIFIER COLON TEXT\n                           | PICTURE IDENTIFIER LPAREN parameters RPAREN COLON TEXT'
     
-_lr_action_items = {'PROTOCOL':([0,],[2,]),'$end':([1,3,4,5,7,8,9,10,14,17,18,28,29,30,32,61,63,64,65,79,80,84,86,],[0,-3,-8,-9,-11,-12,-13,-14,-1,-7,-26,-5,-10,-6,-32,-36,-2,-4,-25,-33,-34,-37,-35,]),'NEWLINE':([1,3,4,5,6,7,8,9,10,14,16,17,18,22,28,29,30,32,48,61,63,64,65,79,80,84,86,],[5,-3,15,-9,17,-11,-12,-13,-14,-1,30,-7,-26,44,-5,-10,-6,-32,64,-36,-2,-4,-25,-33,-34,-37,-35,]),'COMMENT':([1,3,4,5,6,7,8,9,10,14,15,17,18,28,29,30,32,61,63,64,65,79,80,84,86,],[7,-3,-8,-9,16,-11,-12,-13,-14,-1,29,-7,-26,48,-10,-6,-32,-36,-2,-4,-25,-33,-34,-37,-35,]),'ACTOR':([1,3,4,5,7,8,9,10,14,15,17,18,28,29,30,32,61,63,64,65,79,80,84,86,],[11,-3,-8,-9,-11,-12,-13,-14,-1,11,-7,-26,-5,-10,-6,-32,-36,-2,-4,-25,-33,-34,-37,-35,]),'PICTURE':([1,3,4,5,7,8,9,10,14,15,17,18,28,29,30,32,61,63,64,65,79,80,84,86,],[13,-3,-8,-9,-11,-12,-13,-14,-1,13,-7,-26,-5,-10,-6,-32,-36,-2,-4,-25,-33,-34,-37,-35,]),'IDENTIFIER':([1,2,3,4,5,7,8,9,10,11,13,14,15,17,18,23,24,25,28,29,30,32,43,56,57,58,59,61,63,64,65,79,80,84,86,],[12,14,-3,-8,-9,-11,-12,-13,-14,18,26,-1,12,-7,-26,-27,-28,-29,-5,-10,-6,-32,60,72,73,74,75,-36,-2,-4,-25,-33,-34,-37,-35,]),'LPAREN':([12,14,18,26,60,],[20,27,31,46,77,]),'COLON':([12,26,50,60,78,83,],[22,45,22,22,82,22,]),'LANGLE':([12,21,23,24,25,],[23,23,-27,-28,-29,]),'RANGLE':([12,21,23,24,25,],[24,24,-27,-28,-29,]),'MINUS':([12,21,23,24,25,],[25,25,-27,-28,-29,]),'TEXT':([19,22,44,45,66,76,82,85,],[32,-31,-30,61,79,80,84,86,]),'PARAM_GRIDX':([20,27,31,46,51,77,],[35,35,35,35,35,35,]),'PARAM_GRIDY':([20,27,31,46,51,77,],[36,36,36,36,36,36,]),'PARAM_WIDTH':([20,27,31,46,51,77,],[37,37,37,37,37,37,]),'PARAM_HEIGHT':([20,27,31,46,51,77,],[38,38,38,38,38,38,]),'PARAM_LINE':([20,27,31,46,51,77,],[39,39,39,39,39,39,]),'PARAM_ARROW':([20,27,31,46,51,77,],[40,40,40,40,40,40,]),'PARAM_ARROWL':([20,27,31,46,51,77,],[41,41,41,41,41,41,]),'PARAM_ARROWR':([20,27,31,46,51,77,],[42,42,42,42,42,42,]),'RPAREN':([33,34,47,49,62,67,68,69,70,71,72,73,74,75,81,],[50,-23,63,65,78,-24,-15,-16,-17,-18,-19,-20,-21,-22,83,]),'COMMA':([33,34,47,49,62,67,68,69,70,71,72,73,74,75,81,],[51,-23,51,51,51,-24,-15,-16,-17,-18,-19,-20,-21,-22,51,]),'EQUAL':([35,36,37,38,39,40,41,42,],[52,53,54,55,56,57,58,59,]),'NUMBER':([52,53,54,55,],[68,69,70,71,]),}
+_lr_action_items = {'PROTOCOL':([0,],[3,]),'$end':([1,2,4,5,6,7,8,12,13,23,50,52,53,67,68,72,74,],[0,-1,-4,-5,-6,-7,-8,-2,-20,-24,-28,-3,-19,-25,-26,-29,-27,]),'COMMENT':([2,4,5,6,7,8,12,13,23,50,52,53,67,68,72,74,],[8,-4,-5,-6,-7,-8,-2,-20,-24,-28,-3,-19,-25,-26,-29,-27,]),'ACTOR':([2,4,5,6,7,8,12,13,23,50,52,53,67,68,72,74,],[9,-4,-5,-6,-7,-8,-2,-20,-24,-28,-3,-19,-25,-26,-29,-27,]),'PICTURE':([2,4,5,6,7,8,12,13,23,50,52,53,67,68,72,74,],[11,-4,-5,-6,-7,-8,-2,-20,-24,-28,-3,-19,-25,-26,-29,-27,]),'IDENTIFIER':([2,3,4,5,6,7,8,9,11,12,13,17,18,19,23,34,45,46,47,48,50,52,53,67,68,72,74,],[10,12,-4,-5,-6,-7,-8,13,20,-2,-20,-21,-22,-23,-24,49,60,61,62,63,-28,-3,-19,-25,-26,-29,-27,]),'COLON':([10,20,39,49,66,71,],[14,35,54,64,70,73,]),'LPAREN':([10,12,13,20,49,],[15,21,22,36,65,]),'LANGLE':([10,16,17,18,19,],[17,17,-21,-22,-23,]),'RANGLE':([10,16,17,18,19,],[18,18,-21,-22,-23,]),'MINUS':([10,16,17,18,19,],[19,19,-21,-22,-23,]),'TEXT':([14,35,54,64,70,73,],[23,50,67,68,72,74,]),'PARAM_GRIDX':([15,21,22,36,40,65,],[26,26,26,26,26,26,]),'PARAM_GRIDY':([15,21,22,36,40,65,],[27,27,27,27,27,27,]),'PARAM_WIDTH':([15,21,22,36,40,65,],[28,28,28,28,28,28,]),'PARAM_HEIGHT':([15,21,22,36,40,65,],[29,29,29,29,29,29,]),'PARAM_LINE':([15,21,22,36,40,65,],[30,30,30,30,30,30,]),'PARAM_ARROW':([15,21,22,36,40,65,],[31,31,31,31,31,31,]),'PARAM_ARROWL':([15,21,22,36,40,65,],[32,32,32,32,32,32,]),'PARAM_ARROWR':([15,21,22,36,40,65,],[33,33,33,33,33,33,]),'RPAREN':([24,25,37,38,51,55,56,57,58,59,60,61,62,63,69,],[39,-17,52,53,66,-18,-9,-10,-11,-12,-13,-14,-15,-16,71,]),'COMMA':([24,25,37,38,51,55,56,57,58,59,60,61,62,63,69,],[40,-17,40,40,40,-18,-9,-10,-11,-12,-13,-14,-15,-16,40,]),'EQUAL':([26,27,28,29,30,31,32,33,],[41,42,43,44,45,46,47,48,]),'NUMBER':([41,42,43,44,],[56,57,58,59,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'ps':([0,],[1,]),'declcomment':([1,],[3,]),'multicomment':([1,],[4,]),'declaration':([1,15,],[6,28,]),'declaration_actor':([1,15,],[8,8,]),'declaration_picture':([1,15,],[9,9,]),'declaration_draw':([1,15,],[10,10,]),'colonnewline':([12,50,60,83,],[19,66,76,85,]),'arrowpart':([12,21,],[21,43,]),'parameters':([20,27,31,46,77,],[33,47,49,62,81,]),'parameter':([20,27,31,46,51,77,],[34,34,34,34,67,34,]),}
+_lr_goto_items = {'finish':([0,],[1,]),'ps':([0,],[2,]),'declaration':([2,],[4,]),'declaration_actor':([2,],[5,]),'declaration_picture':([2,],[6,]),'declaration_draw':([2,],[7,]),'arrowpart':([10,16,],[16,34,]),'parameters':([15,21,22,36,65,],[24,37,38,51,69,]),'parameter':([15,21,22,36,40,65,],[25,25,25,25,55,25,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -26,42 +26,34 @@ for _k, _v in _lr_goto_items.items():
        _lr_goto[_x][_k] = _y
 del _lr_goto_items
 _lr_productions = [
-  ("S' -> ps","S'",1,None,None,None),
-  ('ps -> PROTOCOL IDENTIFIER','ps',2,'p_ps','parser.py',79),
-  ('ps -> PROTOCOL IDENTIFIER LPAREN parameters RPAREN','ps',5,'p_ps','parser.py',80),
-  ('ps -> ps declcomment','ps',2,'p_ps','parser.py',81),
-  ('declcomment -> multicomment NEWLINE declaration COMMENT NEWLINE','declcomment',5,'p_declcomment','parser.py',99),
-  ('declcomment -> multicomment NEWLINE declaration','declcomment',3,'p_declcomment','parser.py',100),
-  ('declcomment -> declaration COMMENT NEWLINE','declcomment',3,'p_declcomment','parser.py',101),
-  ('declcomment -> declaration NEWLINE','declcomment',2,'p_declcomment','parser.py',102),
-  ('declcomment -> multicomment','declcomment',1,'p_declcomment','parser.py',103),
-  ('declcomment -> NEWLINE','declcomment',1,'p_declcomment','parser.py',104),
-  ('multicomment -> multicomment NEWLINE COMMENT','multicomment',3,'p_multicomment','parser.py',130),
-  ('multicomment -> COMMENT','multicomment',1,'p_multicomment','parser.py',131),
-  ('declaration -> declaration_actor','declaration',1,'p_declaration','parser.py',140),
-  ('declaration -> declaration_picture','declaration',1,'p_declaration','parser.py',141),
-  ('declaration -> declaration_draw','declaration',1,'p_declaration','parser.py',142),
-  ('parameter -> PARAM_GRIDX EQUAL NUMBER','parameter',3,'p_parameter','parser.py',147),
-  ('parameter -> PARAM_GRIDY EQUAL NUMBER','parameter',3,'p_parameter','parser.py',148),
-  ('parameter -> PARAM_WIDTH EQUAL NUMBER','parameter',3,'p_parameter','parser.py',149),
-  ('parameter -> PARAM_HEIGHT EQUAL NUMBER','parameter',3,'p_parameter','parser.py',150),
-  ('parameter -> PARAM_LINE EQUAL IDENTIFIER','parameter',3,'p_parameter','parser.py',151),
-  ('parameter -> PARAM_ARROW EQUAL IDENTIFIER','parameter',3,'p_parameter','parser.py',152),
-  ('parameter -> PARAM_ARROWL EQUAL IDENTIFIER','parameter',3,'p_parameter','parser.py',153),
-  ('parameter -> PARAM_ARROWR EQUAL IDENTIFIER','parameter',3,'p_parameter','parser.py',154),
-  ('parameters -> parameter','parameters',1,'p_parameters','parser.py',159),
-  ('parameters -> parameters COMMA parameter','parameters',3,'p_parameters','parser.py',160),
-  ('declaration_actor -> ACTOR IDENTIFIER LPAREN parameters RPAREN','declaration_actor',5,'p_declaration_actor','parser.py',168),
-  ('declaration_actor -> ACTOR IDENTIFIER','declaration_actor',2,'p_declaration_actor','parser.py',169),
-  ('arrowpart -> LANGLE','arrowpart',1,'p_arrowpart','parser.py',177),
-  ('arrowpart -> RANGLE','arrowpart',1,'p_arrowpart','parser.py',178),
-  ('arrowpart -> MINUS','arrowpart',1,'p_arrowpart','parser.py',179),
-  ('colonnewline -> COLON NEWLINE','colonnewline',2,'p_colonnewline','parser.py',183),
-  ('colonnewline -> COLON','colonnewline',1,'p_colonnewline','parser.py',184),
-  ('declaration_draw -> IDENTIFIER colonnewline TEXT','declaration_draw',3,'p_declaration_draw','parser.py',189),
-  ('declaration_draw -> IDENTIFIER LPAREN parameters RPAREN colonnewline TEXT','declaration_draw',6,'p_declaration_draw','parser.py',190),
-  ('declaration_draw -> IDENTIFIER arrowpart arrowpart IDENTIFIER colonnewline TEXT','declaration_draw',6,'p_declaration_draw','parser.py',191),
-  ('declaration_draw -> IDENTIFIER arrowpart arrowpart IDENTIFIER LPAREN parameters RPAREN colonnewline TEXT','declaration_draw',9,'p_declaration_draw','parser.py',192),
-  ('declaration_picture -> PICTURE IDENTIFIER COLON TEXT','declaration_picture',4,'p_declaration_picture','parser.py',204),
-  ('declaration_picture -> PICTURE IDENTIFIER LPAREN parameters RPAREN COLON TEXT','declaration_picture',7,'p_declaration_picture','parser.py',205),
+  ("S' -> finish","S'",1,None,None,None),
+  ('finish -> ps','finish',1,'p_finish','parser.py',86),
+  ('ps -> PROTOCOL IDENTIFIER','ps',2,'p_ps','parser.py',94),
+  ('ps -> PROTOCOL IDENTIFIER LPAREN parameters RPAREN','ps',5,'p_ps','parser.py',95),
+  ('ps -> ps declaration','ps',2,'p_ps','parser.py',96),
+  ('declaration -> declaration_actor','declaration',1,'p_declaration','parser.py',113),
+  ('declaration -> declaration_picture','declaration',1,'p_declaration','parser.py',114),
+  ('declaration -> declaration_draw','declaration',1,'p_declaration','parser.py',115),
+  ('declaration -> COMMENT','declaration',1,'p_declaration','parser.py',116),
+  ('parameter -> PARAM_GRIDX EQUAL NUMBER','parameter',3,'p_parameter','parser.py',177),
+  ('parameter -> PARAM_GRIDY EQUAL NUMBER','parameter',3,'p_parameter','parser.py',178),
+  ('parameter -> PARAM_WIDTH EQUAL NUMBER','parameter',3,'p_parameter','parser.py',179),
+  ('parameter -> PARAM_HEIGHT EQUAL NUMBER','parameter',3,'p_parameter','parser.py',180),
+  ('parameter -> PARAM_LINE EQUAL IDENTIFIER','parameter',3,'p_parameter','parser.py',181),
+  ('parameter -> PARAM_ARROW EQUAL IDENTIFIER','parameter',3,'p_parameter','parser.py',182),
+  ('parameter -> PARAM_ARROWL EQUAL IDENTIFIER','parameter',3,'p_parameter','parser.py',183),
+  ('parameter -> PARAM_ARROWR EQUAL IDENTIFIER','parameter',3,'p_parameter','parser.py',184),
+  ('parameters -> parameter','parameters',1,'p_parameters','parser.py',189),
+  ('parameters -> parameters COMMA parameter','parameters',3,'p_parameters','parser.py',190),
+  ('declaration_actor -> ACTOR IDENTIFIER LPAREN parameters RPAREN','declaration_actor',5,'p_declaration_actor','parser.py',198),
+  ('declaration_actor -> ACTOR IDENTIFIER','declaration_actor',2,'p_declaration_actor','parser.py',199),
+  ('arrowpart -> LANGLE','arrowpart',1,'p_arrowpart','parser.py',208),
+  ('arrowpart -> RANGLE','arrowpart',1,'p_arrowpart','parser.py',209),
+  ('arrowpart -> MINUS','arrowpart',1,'p_arrowpart','parser.py',210),
+  ('declaration_draw -> IDENTIFIER COLON TEXT','declaration_draw',3,'p_declaration_draw','parser.py',215),
+  ('declaration_draw -> IDENTIFIER LPAREN parameters RPAREN COLON TEXT','declaration_draw',6,'p_declaration_draw','parser.py',216),
+  ('declaration_draw -> IDENTIFIER arrowpart arrowpart IDENTIFIER COLON TEXT','declaration_draw',6,'p_declaration_draw','parser.py',217),
+  ('declaration_draw -> IDENTIFIER arrowpart arrowpart IDENTIFIER LPAREN parameters RPAREN COLON TEXT','declaration_draw',9,'p_declaration_draw','parser.py',218),
+  ('declaration_picture -> PICTURE IDENTIFIER COLON TEXT','declaration_picture',4,'p_declaration_picture','parser.py',231),
+  ('declaration_picture -> PICTURE IDENTIFIER LPAREN parameters RPAREN COLON TEXT','declaration_picture',7,'p_declaration_picture','parser.py',232),
 ]

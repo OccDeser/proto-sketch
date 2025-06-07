@@ -11,7 +11,7 @@ reserved = {'if': 'IF', 'while': 'WHILE',
             'width': 'PARAM_WIDTH', 'height': 'PARAM_HEIGHT',
             'line_style': 'PARAM_LINE', 'arrowl_style': 'PARAM_ARROWL',
             'arrowr_style': 'PARAM_ARROWR', 'arrow_style': 'PARAM_ARROW'}
-tokens = ['COLON', 'MINUS', 'LANGLE', 'RANGLE', 'LPAREN', 'RPAREN', 'EQUAL', 'COMMA', 
+tokens = ['COLON', 'MINUS', 'LANGLE', 'RANGLE', 'LPAREN', 'RPAREN', 'EQUAL', 'COMMA',
           'NEWLINE', 'TEXT', 'COMMENT', 'NUMBER', 'IDENTIFIER']
 tokens += list(reserved.values())
 
@@ -29,7 +29,6 @@ def t_NEWLINE(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
     t.lexer.line_start = t.lexpos + len(t.value)
-    return t
 
 
 def t_TEXT(t):  # 匹配双引号包围的字符串，支持转义字符
@@ -62,7 +61,8 @@ t_ignore = ' \t'  # 忽略空格和制表符
 
 
 def t_error(t):
-    print(f"Illegal character '{t.value[0]}' at line {t.lineno}, column {t.lexpos - t.lexer.line_start + 1}")
+    print(f"Illegal character '{t.value[0]}' at line {t.lineno}, "
+          f"column {t.lexpos - t.lexer.line_start + 1}")
     t.lexer.skip(1)
 
 
@@ -73,14 +73,27 @@ lexer.line_start = 0
 # 2. 语法分析器
 ##########################################################
 
-# precedence = (
-#     ('nonassoc', 'NEWLINE'),  # NEWLINE 不参与结合，但用于优先 shift
-# )
+precedence = (
+    ('nonassoc', 'NEWLINE'),
+)
+
+comments = []
+last_item = None
+last_line = None
+
+
+def p_finish(p):
+    '''finish : ps'''
+    global comments
+    p[0] = p[1]
+    for c in comments:
+        p[0].add(c)
+
 
 def p_ps(p):
     '''ps : PROTOCOL IDENTIFIER
           | PROTOCOL IDENTIFIER LPAREN parameters RPAREN
-          | ps declcomment'''
+          | ps declaration'''
     if p[1] == 'protocol':
         if len(p) == 3:
             p[0] = Protocol(p[2], Params())
@@ -88,61 +101,76 @@ def p_ps(p):
             p[0] = Protocol(p[2], Params(p[4]))
     else:
         p[0] = p[1]
+        global comments
         if p[2] is not None:
-            if isinstance(p[2], tuple):
-                p[0].add(p[2][0])
-                p[0].add(p[2][1])
-            else:
-                p[0].add(p[2])
-        
-
-
-def p_declcomment(p):
-    '''declcomment : multicomment NEWLINE declaration COMMENT NEWLINE
-                   | multicomment NEWLINE declaration
-                   | declaration COMMENT NEWLINE
-                   | declaration NEWLINE
-                   | multicomment
-                   | NEWLINE
-                   '''
-    if len(p) == 2:
-        if isinstance(p[1], Comment):
-            p[0] = p[1]
-        else:
-            p[0] = None
-    elif len(p) == 3:
-        p[0] = p[1]
-    elif len(p) == 4:
-        if isinstance(p[1], Comment):
-            if len(p[2]) == 1:
-                p[0] = p[3]
-                p[0].prefix_comment = p[1]
-            else:
-                p[0] = (p[1], p[3])
-        else:
-            p[0] = p[1]
-            p[0].suffix_comment = Comment(p[2])
-    elif len(p) == 6:
-        p[0] = p[3]
-        p[0].prefix_comment = p[1]
-        p[0].suffix_comment = Comment(p[4])
-
-
-def p_multicomment(p):
-    '''multicomment : multicomment NEWLINE COMMENT
-                    | COMMENT'''
-    if len(p) == 2:
-        p[0] = Comment(p[1])
-    else:
-        p[0] = p[1]
-        p[0].add(p[3])
+            for i in comments:
+                p[0].add(i)
+            p[0].add(p[2])
+            comments = []
 
 
 def p_declaration(p):
     '''declaration : declaration_actor
                    | declaration_picture
-                   | declaration_draw'''
-    p[0] = p[1]
+                   | declaration_draw
+                   | COMMENT'''
+
+    if isinstance(p[1], str):
+        item = Comment(p[1].strip())
+        line = p.lineno(1)
+    else:
+        item = p[1]
+        line = item.lineno
+
+    global last_item, last_line, comments
+
+    if last_item is None:
+        last_item = item
+        last_line = line
+        if isinstance(item, Comment):
+            comments.append(item)
+            p[0] = None
+        else:
+            p[0] = item
+    else:
+        # 上一个是Comment，当前也是Comment，连续
+        if isinstance(last_item, Comment) and isinstance(item, Comment) and last_line + 1 == line:
+            last_item.add(item)
+            last_line = line
+            p[0] = None
+        # 上一个是Comment，当前也是Comment，不连续
+        elif isinstance(last_item, Comment) and isinstance(item, Comment) and last_line + 1 != line:
+            last_item = item
+            last_line = line
+            comments.append(item)
+            p[0] = None
+        # 上一个是Comment，当前不是Comment，连续
+        elif isinstance(last_item, Comment) and not isinstance(item, Comment) and last_line + 1 == line:
+            assert comments.pop() is last_item
+            item.prefix_comment = last_item
+            last_item = item
+            last_line = line
+            p[0] = item
+        # 上一个是Comment，当前不是Comment，不连续
+        elif isinstance(last_item, Comment) and not isinstance(item, Comment) and last_line + 1 != line:
+            last_item = item
+            last_line = line
+            p[0] = item
+        # 上一个不是Comment，当前是Comment，同行
+        elif not isinstance(last_item, Comment) and isinstance(item, Comment) and last_line == line:
+            last_item.suffix_comment = item
+            p[0] = None
+        # 上一个不是Comment，当前是Comment，不同行
+        elif not isinstance(last_item, Comment) and isinstance(item, Comment) and last_line != line:
+            last_item = item
+            last_line = line
+            comments.append(item)
+            p[0] = None
+        # 上一个不是Comment，当前也不是Comment
+        elif not isinstance(last_item, Comment) and not isinstance(item, Comment):
+            last_item = item
+            last_line = line
+            p[0] = item
 
 
 def p_parameter(p):
@@ -173,6 +201,7 @@ def p_declaration_actor(p):
         p[0] = Actor(p[2], Params())
     else:
         p[0] = Actor(p[2], Params(p[4]))
+    p[0].lineno = p.lineno(1)
 
 
 def p_arrowpart(p):
@@ -181,17 +210,12 @@ def p_arrowpart(p):
                  | MINUS'''
     p[0] = p[1]
 
-def p_colonnewline(p):
-    '''colonnewline : COLON NEWLINE
-                    | COLON'''
-    p[0] = p[1]
-
 
 def p_declaration_draw(p):
-    '''declaration_draw : IDENTIFIER colonnewline TEXT
-                        | IDENTIFIER LPAREN parameters RPAREN colonnewline TEXT
-                        | IDENTIFIER arrowpart arrowpart IDENTIFIER colonnewline TEXT
-                        | IDENTIFIER arrowpart arrowpart IDENTIFIER LPAREN parameters RPAREN colonnewline TEXT'''
+    '''declaration_draw : IDENTIFIER COLON TEXT
+                        | IDENTIFIER LPAREN parameters RPAREN COLON TEXT
+                        | IDENTIFIER arrowpart arrowpart IDENTIFIER COLON TEXT
+                        | IDENTIFIER arrowpart arrowpart IDENTIFIER LPAREN parameters RPAREN COLON TEXT'''
     if p[2] == ':':
         p[0] = Draw(p[1], p[1], None, None, p[3], [])
     elif p[2] == '(':
@@ -200,6 +224,7 @@ def p_declaration_draw(p):
         p[0] = Draw(p[1], p[4], p[2], p[3], p[6], [])
     else:
         p[0] = Draw(p[1], p[4], p[2], p[3], p[9], p[6])
+    p[0].lineno = p.lineno(1)
 
 
 def p_declaration_picture(p):
@@ -209,6 +234,7 @@ def p_declaration_picture(p):
         p[0] = Picture(p[2], p[4], Params([]))
     else:
         p[0] = Picture(p[2], p[7], Params(p[4]))
+    p[0].lineno = p.lineno(1)
 
 
 def p_error(p):
@@ -218,13 +244,14 @@ def p_error(p):
         if next_nl < 0:
             next_nl = len(lexer.lexdata)
         return lexer.lexdata[last_cr+1:next_nl]
-    
+
     if p:
         col = p.lexpos - lexer.line_start + 1
-        print(f"Error in line {p.lineno}:")
+        print(f"Syntax error in line {p.lineno}:")
         print(f"    {get_error_context(p)}")
         print(" " * (col + 3) + "^")
     else:
         print("Syntax error at EOF")
+
 
 parser = yacc.yacc(debug=True)

@@ -128,6 +128,7 @@ class Message:
 
 class Draw:
     def __init__(self, src, dst, larrow, rarrow, text, params):
+        self.lineno = None
         self.prefix_comment = None
         self.suffix_comment = None
         self.src = src
@@ -187,6 +188,7 @@ class Draw:
 
 class Actor:
     def __init__(self, name: str, params: Params):
+        self.lineno = None
         self.prefix_comment = None
         self.suffix_comment = None
         self.name = name
@@ -220,6 +222,7 @@ class Actor:
 
 class Picture:
     def __init__(self, name, file, params):
+        self.lineno = None
         self.prefix_comment = None
         self.suffix_comment = None
         self.name = name
@@ -255,5 +258,8 @@ class Comment:
     def dump(self):
         return "\n".join([f"# {comment}" for comment in self.comments])
 
-    def add(self, text):
-        self.comments.append(text)
+    def add(self, comment):
+        if isinstance(comment, Comment):
+            self.comments.extend(comment.comments)
+        else:
+            self.comments.append(comment)
